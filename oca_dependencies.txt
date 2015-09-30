@@ -1,6 +1,6 @@
-connector
-connector-ecommerce
-e-commerce
-product-attribute
-sale-workflow
-server-tools
+connector https://github.com/oca/connector
+connector-ecommerce  https://github.com/oca/connector-ecommerce
+e-commerce  https://github.com/oca/e-commerce
+product-attribute https://github.com/oca/product-attribute
+sale-workflow https://github.com/oca/sale-workflow
+server-tools https://github.com/oca/server-tools
