@@ -51,11 +51,17 @@ class MagentoStoreview(models.Model):
              'but its sales orders should not be imported.',
     )
     catalog_price_tax_included = fields.Boolean(string='Prices include tax')
+    is_multi_company = fields.Boolean(related="backend_id.is_multi_company")
 
     @api.multi
     def import_sale_orders(self):
         import_start_time = datetime.now()
         for storeview in self:
+            user_id = storeview.sudo().warehouse_id.company_id.\
+                user_tech_id.id or self.env.uid
+            magento_so_obj = self.env['magento.sale.order']
+            if user_id != self.env.uid:
+                magento_so_obj = magento_so_obj.sudo(user_id)
             if storeview.no_sales_order_sync:
                 _logger.debug("The storeview '%s' is active in Magento "
                               "but is configured not to import the "
@@ -67,7 +73,7 @@ class MagentoStoreview(models.Model):
                 from_date = from_string(storeview.import_orders_from_date)
             else:
                 from_date = None
-            delayable = self.env['magento.sale.order'].with_delay(priority=1)
+            delayable = magento_so_obj.with_delay(priority=1)
             filters = {
                 'magento_storeview_id': storeview.external_id,
                 'from_date': from_date,
